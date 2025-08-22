@@ -1,3 +1,12 @@
+"""
+Basic plotting utilities for FEM vs PINN comparison.
+
+Generates static plots comparing displacement solutions and training loss evolution
+with error quantification and visualization.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -8,6 +17,14 @@ import numpy as np
 
 
 def main():
+    """
+    Generate comparison plots between FEM and PINN solutions.
+
+    Creates three types of plots:
+    1. Displacement comparison with L2 error
+    2. Pointwise error distribution
+    3. Training loss evolution (if available)
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--case", choices=["body_force", "tip_load", "hetero"], default="body_force")
     ap.add_argument("--out", type=str, default="data/outputs")

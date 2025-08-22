@@ -1,3 +1,12 @@
+"""
+Prediction evolution animation utilities.
+
+Creates dynamic visualizations of model predictions during training, showing
+how PINN and black-box network solutions converge to the FEM reference solution.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -9,6 +18,19 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 
 
 def animate_preds(pinn_log: str, bb_log: str, fem_csv: str, outgif: str, title: str):
+    """
+    Create animated visualization of prediction evolution during training.
+
+    Generates an animated plot showing how PINN and black-box predictions
+    evolve over training epochs compared to the FEM reference solution.
+
+    Args:
+        pinn_log: Path to PINN training log with prediction snapshots
+        bb_log: Path to black-box training log with prediction snapshots
+        fem_csv: Path to FEM solution CSV file
+        outgif: Output path for the generated GIF animation
+        title: Title for the animation plot
+    """
     P = Path(outgif).parent; P.mkdir(parents=True, exist_ok=True)
 
     fem = np.loadtxt(fem_csv, delimiter=",", skiprows=1)
@@ -51,6 +73,13 @@ def animate_preds(pinn_log: str, bb_log: str, fem_csv: str, outgif: str, title: 
     print(f"[animate_predictions] saved {outgif}")
 
 def main():
+    """
+    Command-line interface for prediction animation generation.
+
+    Parses command-line arguments and generates animated prediction evolution plots.
+    Compares PINN and black-box predictions against FEM reference solutions,
+    showing convergence behavior over training epochs.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--pinn", required=True, help="pinn_*_trainlog.npz")
     ap.add_argument("--bb", required=True, help="bb_trainlog.npz")

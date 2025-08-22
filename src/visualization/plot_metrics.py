@@ -1,3 +1,12 @@
+"""
+Advanced metric visualization for parameter sweep results.
+
+Processes and visualizes comparative performance metrics from systematic studies,
+including data efficiency analysis, noise robustness, and reliability assessment.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -9,15 +18,25 @@ import numpy as np
 
 
 def load_csv(path:str):
+    """Load CSV data with proper handling of mixed data types."""
     arr = np.genfromtxt(path, delimiter=",", names=True, dtype=None, encoding=None)
     return arr
 
 def lineplot(ax, xs, ys, label):
+    """Create line plot with markers, properly sorted by x-values."""
     xs = np.array(xs, dtype=float); ys = np.array(ys, dtype=float)
     idx = np.argsort(xs); xs, ys = xs[idx], ys[idx]
     ax.plot(xs, ys, marker="o", label=label)
 
 def main():
+    """
+    Generate comprehensive metric visualization plots.
+
+    Creates three types of analysis plots:
+    1. Data efficiency: Error vs dataset size
+    2. Noise robustness: Error vs label noise level
+    3. Reliability: Mean±std performance comparison
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default="data/outputs/metrics.csv")
     ap.add_argument("--out", default="data/outputs")
