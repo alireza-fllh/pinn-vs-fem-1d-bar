@@ -1,3 +1,12 @@
+"""
+Command-line interface for Physics-Informed Neural Network training.
+
+Provides a comprehensive CLI for PINN training with flexible boundary conditions,
+normalization options, and training snapshot logging for analysis.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -6,10 +15,20 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from src.core import BCSpec, PINNConfig, PINNTrainer
+from src.core import BCSpec, PINNConfig, PINNTrainer, get_case_config
 
 
 def bc_from_args(side: str, args: argparse.Namespace) -> BCSpec:
+    """
+    Create boundary condition specification from command-line arguments.
+
+    Args:
+        side: Boundary side ("left" or "right")
+        args: Parsed command-line arguments
+
+    Returns:
+        BCSpec object configured according to arguments
+    """
     if side == "left":
         kind = args.left_type
         u, P = args.u0, args.P0
@@ -30,6 +49,13 @@ def bc_from_args(side: str, args: argparse.Namespace) -> BCSpec:
 
 
 def main():
+    """
+    Command-line interface for PINN training execution.
+
+    Supports comprehensive training configuration including boundary conditions,
+    normalization options, and automatic snapshot logging. Saves both final
+    predictions and training history for analysis and visualization.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--case", choices=["body_force", "tip_load", "hetero"], default="body_force")
     ap.add_argument("--epochs", type=int, default=10000)
@@ -60,23 +86,9 @@ def main():
     ap.add_argument("--out", type=str, default="data/outputs")
     args = ap.parse_args()
 
-    # Defaults by case
-    if args.case == "body_force":
-        f_fn = lambda x: torch.ones_like(x)
-        E_fn = lambda x: torch.ones_like(x)
-        A_fn = lambda x: torch.ones_like(x)
-        default_right = ("neumann", 0.0)
-    elif args.case == "tip_load":
-        f_fn = lambda x: torch.zeros_like(x)
-        E_fn = lambda x: torch.ones_like(x)
-        A_fn = lambda x: torch.ones_like(x)
-        default_right = ("neumann", 1.0)
-    else:  # hetero
-        import math
-        f_fn = lambda x: 2.0 * torch.sin(2 * math.pi * x)
-        E_fn = lambda x: torch.where(x < 0.5, torch.ones_like(x), 3.0*torch.ones_like(x))
-        A_fn = lambda x: 1.0 + 0.5 * x
-        default_right = ("neumann", 0.0)
+    # Get case configuration from physics module
+    E_fn, A_fn, f_fn, P_default = get_case_config(args.case)
+    default_right = ("neumann", P_default)
 
     if args.right_type is None:
         args.right_type = default_right[0]

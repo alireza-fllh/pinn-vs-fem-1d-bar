@@ -1,3 +1,12 @@
+"""
+Black-box neural network training for supervised learning.
+
+Implements data-driven neural networks that learn input-output mappings
+without physics constraints, serving as baseline comparison for PINNs.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -10,6 +19,18 @@ import torch.nn as nn
 
 
 class BBNet(nn.Module):
+    """
+    Black-box neural network for supervised displacement prediction.
+
+    Standard feedforward network with ReLU activations that learns to map
+    [x_coordinate, parameter] inputs to displacement outputs.
+
+    Args:
+        in_dim: Input dimension (typically 2 for [x, P])
+        out_dim: Output dimension (typically 1 for displacement)
+        width: Hidden layer width
+        depth: Number of hidden layers
+    """
     def __init__(self, in_dim=2, out_dim=1, width=64, depth=4):
         super().__init__()
         layers = [nn.Linear(in_dim, width), nn.ReLU()]
@@ -19,12 +40,26 @@ class BBNet(nn.Module):
         self.net = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass ensuring proper input shape."""
         if x.ndim == 1: x = x.unsqueeze(1)
         return self.net(x)
 
 
 @dataclass
 class BBConfig:
+    """
+    Configuration for black-box neural network training.
+
+    Args:
+        lr: Learning rate for Adam optimizer
+        epochs: Number of training epochs
+        batch: Batch size for mini-batch training
+        width: Network width (hidden layer size)
+        depth: Network depth (number of hidden layers)
+        seed: Random seed for reproducibility
+        snap_every: Frequency of prediction snapshots (epochs)
+        p_eval: Parameter value for evaluation snapshots
+    """
     lr: float = 1e-3
     epochs: int = 6000
     batch: int = 256
@@ -35,6 +70,20 @@ class BBConfig:
     p_eval: float = 0.6  # P used for visualization snapshots
 
 def train_bb(npz_path: str, cfg: BBConfig, out_model: str, out_log: str):
+    """
+    Train black-box neural network on supervised dataset.
+
+    Args:
+        npz_path: Path to training dataset (X, Y arrays)
+        cfg: Training configuration
+        out_model: Output path for saved model weights
+        out_log: Output path for training log and snapshots
+
+    The function implements standard supervised learning with:
+    - Mini-batch gradient descent
+    - MSE loss function
+    - Periodic prediction snapshots for visualization
+    """
     torch.manual_seed(cfg.seed)
     data = np.load(npz_path)
     X = torch.tensor(data["X"], dtype=torch.float32)  # [x, P]
@@ -80,6 +129,7 @@ def train_bb(npz_path: str, cfg: BBConfig, out_model: str, out_log: str):
 
 
 def main():
+    """Command-line interface for black-box neural network training."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True, help="path to dataset npz")
     ap.add_argument("--epochs", type=int, default=6000)

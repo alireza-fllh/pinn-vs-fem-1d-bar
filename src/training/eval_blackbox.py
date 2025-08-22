@@ -1,3 +1,12 @@
+"""
+Evaluation utilities for trained black-box neural networks.
+
+Provides tools for testing black-box model performance against FEM references
+with optional visualization and error quantification.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -13,6 +22,18 @@ from .train_blackbox import BBNet
 
 
 def eval_one_P(model_path: str, P: float, plot: bool, outdir: str):
+    """
+    Evaluate black-box model performance for a single parameter value.
+
+    Args:
+        model_path: Path to trained model weights
+        P: Traction parameter value for evaluation
+        plot: Whether to generate comparison plots
+        outdir: Output directory for plots and results
+
+    Returns:
+        L2 error compared to FEM reference solution
+    """
     # load model
     model = BBNet(in_dim=2)
     model.load_state_dict(torch.load(model_path, map_location="cpu"))
@@ -50,6 +71,12 @@ def eval_one_P(model_path: str, P: float, plot: bool, outdir: str):
     return l2
 
 def main():
+    """
+    Command-line interface for black-box model evaluation.
+
+    Evaluates trained models across multiple parameter values with optional
+    visualization and error quantification against FEM references.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--Ps", type=float, nargs="+", required=True)

@@ -1,14 +1,37 @@
+"""
+Command-line interface for Finite Element Method solver.
+
+Provides a flexible CLI for running FEM simulations with configurable
+boundary conditions, material properties, and predefined case studies.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
 import numpy as np
+import torch
 
-from src.core import BCSpec, FEMConfig, solve_1d_bar
+from src.core import BCSpec, FEMConfig, solve_1d_bar, get_case_config
 
 
 def bc_from_args(side: str, args: argparse.Namespace) -> BCSpec:
+    """
+    Create boundary condition specification from command-line arguments.
+
+    Args:
+        side: Boundary side ("left" or "right")
+        args: Parsed command-line arguments
+
+    Returns:
+        BCSpec object configured according to arguments
+
+    Raises:
+        ValueError: If unknown boundary condition type specified
+    """
     if side == "left":
         kind = args.left_type
         u, P = args.u0, args.P0
@@ -29,6 +52,13 @@ def bc_from_args(side: str, args: argparse.Namespace) -> BCSpec:
 
 
 def main():
+    """
+    Command-line interface for FEM solver execution.
+
+    Supports flexible boundary condition specification, predefined case studies,
+    and automatic material property assignment. Results are saved as CSV files
+    suitable for comparison with other solution methods.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--case", choices=["body_force", "tip_load", "hetero"], default="body_force")
     ap.add_argument("--elements", type=int, default=40)
@@ -54,22 +84,14 @@ def main():
     ap.add_argument("--out", type=str, default="data/outputs")
     args = ap.parse_args()
 
-    # Loads/coefficients by case
-    if args.case == "body_force":
-        E_fn = lambda x: np.ones_like(x)
-        A_fn = lambda x: np.ones_like(x)
-        f_fn = lambda x: np.ones_like(x)
-        default_right = ("neumann", 0.0)
-    elif args.case == "tip_load":
-        E_fn = lambda x: np.ones_like(x)
-        A_fn = lambda x: np.ones_like(x)
-        f_fn = lambda x: np.zeros_like(x)
-        default_right = ("neumann", 1.0)
-    else:  # hetero
-        E_fn = lambda x: np.where(x < 0.5, 1.0, 3.0)
-        A_fn = lambda x: 1.0 + 0.5 * x
-        f_fn = lambda x: 2.0 * np.sin(2*np.pi*x)
-        default_right = ("neumann", 0.0)
+    # Get case configuration and convert to numpy functions
+    E_fn_torch, A_fn_torch, f_fn_torch, P_default = get_case_config(args.case)
+
+    # Convert torch functions to numpy for FEM
+    E_fn = lambda x: E_fn_torch(torch.from_numpy(x)).numpy()
+    A_fn = lambda x: A_fn_torch(torch.from_numpy(x)).numpy()
+    f_fn = lambda x: f_fn_torch(torch.from_numpy(x)).numpy()
+    default_right = ("neumann", P_default)
 
     # Default right BC by case unless user overrides type/PL
     if args.right_type is None:
