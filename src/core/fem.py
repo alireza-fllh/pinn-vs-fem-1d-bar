@@ -1,3 +1,12 @@
+"""
+Finite Element Method (FEM) solver for 1D elastic bar problems.
+
+Solves: -d/dx(E(x) * A(x) * du/dx) = f(x) on domain [0, L]
+Supports variable material properties and Dirichlet/Neumann/Robin BCs.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,6 +19,16 @@ from .utils import BCSpec
 
 @dataclass
 class FEMConfig:
+    """
+    FEM solver configuration.
+
+    Args:
+        L: Domain length [0, L]. Default: 1.0
+        N: Number of elements. Default: 40
+        E_fn: Young's modulus E(x). Default: constant 1.0
+        A_fn: Cross-sectional area A(x). Default: constant 1.0
+        body_force_fn: Body force f(x). Default: zero
+    """
     L: float = 1.0
     N: int = 40
     E_fn: Optional[Callable[[np.ndarray], np.ndarray]] = None
@@ -18,6 +37,18 @@ class FEMConfig:
 
 
 def solve_1d_bar(cfg: FEMConfig, bc_left: BCSpec, bc_right: BCSpec):
+    """
+    Solve 1D elastic bar using linear finite elements.
+
+    Args:
+        cfg: FEM configuration
+        bc_left: Left boundary condition (x=0)
+        bc_right: Right boundary condition (x=L)
+
+    Returns:
+        x: Nodal coordinates (N+1,)
+        u: Nodal displacements (N+1,)
+    """
     L, N = cfg.L, cfg.N
     x = np.linspace(0.0, L, N + 1)
     h = L / N
