@@ -1,3 +1,12 @@
+"""
+Dataset generation for supervised learning experiments.
+
+Generates training datasets by sampling FEM solutions across parameter ranges
+with optional label noise for robustness testing.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -10,6 +19,30 @@ from src.core import BCSpec, FEMConfig, solve_1d_bar
 
 def gen_dataset(n_configs: int, n_points: int, P_low: float, P_high: float,
                 sigma: float, seed: int, outdir: str):
+    """
+    Generate supervised learning dataset from FEM solutions.
+
+    Creates a dataset by sampling FEM solutions across a parameter range,
+    suitable for training black-box neural networks.
+
+    Args:
+        n_configs: Number of distinct parameter configurations
+        n_points: Number of spatial points sampled per configuration
+        P_low: Lower bound for traction parameter P
+        P_high: Upper bound for traction parameter P
+        sigma: Standard deviation of Gaussian noise added to labels
+        seed: Random seed for reproducibility
+        outdir: Output directory for dataset files
+
+    Returns:
+        Path to saved dataset file
+
+    Dataset format:
+        - X: Input features [x_coordinate, P_parameter] shape (N, 2)
+        - Y: Target displacements with optional noise, shape (N, 1)
+        - Ps: Parameter values used, shape (n_configs,)
+        - meta: Dictionary with generation parameters
+    """
     rng = np.random.default_rng(seed)
     out = Path(outdir); out.mkdir(parents=True, exist_ok=True)
 
@@ -48,6 +81,7 @@ def gen_dataset(n_configs: int, n_points: int, P_low: float, P_high: float,
     return str(npz_path)
 
 def main():
+    """Command-line interface for dataset generation."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-configs", type=int, default=40)
     ap.add_argument("--n-points", type=int, default=40)

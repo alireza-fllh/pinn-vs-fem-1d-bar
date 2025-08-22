@@ -1,3 +1,12 @@
+"""
+Comprehensive parameter sweep and performance evaluation.
+
+Conducts systematic studies comparing PINN and black-box model performance
+across different data efficiency and noise robustness scenarios.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -7,13 +16,14 @@ from typing import List, Tuple
 import numpy as np
 import torch
 
-from src.core import BCSpec, FEMConfig, PINNConfig, PINNTrainer, solve_1d_bar
+from src.core import BCSpec, FEMConfig, PINNConfig, PINNTrainer, solve_1d_bar, get_case_config
 from src.training import BBConfig, BBNet, train_bb
 
 from .data_gen import gen_dataset
 
 
 def fem_ref(P: float, N:int=400) -> Tuple[np.ndarray, np.ndarray]:
+    """Generate high-resolution FEM reference solution."""
     cfg = FEMConfig(N=N)
     x, u = solve_1d_bar(cfg,
                         BCSpec(kind="dirichlet", u=0.0),
@@ -22,6 +32,7 @@ def fem_ref(P: float, N:int=400) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def l2_on_grid(x_ref,u_ref, x_pred,u_pred)->float:
+    """Compute L2 error between solutions on different grids."""
     u_ref_on_pred = np.interp(x_pred, x_ref, u_ref)
     return float(np.sqrt(np.mean((u_pred - u_ref_on_pred)**2)))
 
@@ -29,6 +40,23 @@ def l2_on_grid(x_ref,u_ref, x_pred,u_pred)->float:
 def train_eval_bb(dataset_npz: str, P_eval: float, seed:int,
                   epochs:int, batch:int, lr:float, width:int, depth:int,
                   outdir: Path)->float:
+    """
+    Train and evaluate black-box model on given dataset.
+
+    Args:
+        dataset_npz: Path to training dataset
+        P_eval: Parameter value for evaluation
+        seed: Random seed for reproducibility
+        epochs: Training epochs
+        batch: Batch size
+        lr: Learning rate
+        width: Network width
+        depth: Network depth
+        outdir: Output directory for model and logs
+
+    Returns:
+        L2 error on evaluation parameter
+    """
     outdir.mkdir(parents=True, exist_ok=True)
     model_path = outdir / f"bb_seed{seed}.pt"
     log_path   = outdir / f"bb_seed{seed}_trainlog.npz"
@@ -50,12 +78,25 @@ def train_eval_bb(dataset_npz: str, P_eval: float, seed:int,
 
 def train_eval_pinn(P_eval: float, seed:int, epochs:int, w_bc:float, lr:float, n_col:int,
                     outdir: Path) -> float:
+    """
+    Train and evaluate PINN model for given parameter.
+
+    Args:
+        P_eval: Traction parameter for evaluation
+        seed: Random seed for reproducibility
+        epochs: Training epochs
+        w_bc: Boundary condition loss weight
+        lr: Learning rate
+        n_col: Number of collocation points
+        outdir: Output directory for results
+
+    Returns:
+        L2 error compared to FEM reference
+    """
     outdir.mkdir(parents=True, exist_ok=True)
 
     # PINN setup for tip_load with Dirichlet(0) at x=0 and Neumann(P_eval) at x=L
-    f_fn  = lambda x: torch.zeros_like(x)
-    E_fn  = lambda x: torch.ones_like(x)
-    A_fn  = lambda x: torch.ones_like(x)
+    E_fn, A_fn, f_fn, _ = get_case_config("tip_load")
     cfg = PINNConfig(case="tip_load", epochs=epochs, w_bc=w_bc, lr=lr,
                      n_collocations=n_col, normalize_x=True, normalize_u=True, seed=seed)
     trainer = PINNTrainer(cfg, E_fn=E_fn, A_fn=A_fn, f_fn=f_fn,
@@ -95,6 +136,16 @@ def train_eval_pinn(P_eval: float, seed:int, epochs:int, w_bc:float, lr:float, n
 
 
 def main():
+    """
+    Execute comprehensive parameter sweep experiments.
+
+    Performs two types of systematic studies:
+    1. Data efficiency: Performance vs dataset size (M)
+    2. Noise robustness: Performance vs label noise (sigma)
+
+    Both PINN and black-box models are evaluated on each configuration
+    across multiple random seeds for statistical significance.
+    """
     ap = argparse.ArgumentParser()
     # sweeps
     ap.add_argument("--P", type=float, default=0.6, help="evaluation P (in-range)")
