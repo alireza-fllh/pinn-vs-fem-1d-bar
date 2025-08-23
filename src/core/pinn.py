@@ -108,7 +108,7 @@ class PINNTrainer:
     def __init__(self, cfg: PINNConfig, E_fn, A_fn, f_fn, bc_left: BCSpec, bc_right: BCSpec):
         torch.manual_seed(cfg.seed)
         self.cfg = cfg
-        self.model = PinnNet(in_dim=1, out_dim=1, width=64, depth=4)
+        self.model = PinnNet(in_dim=1, out_dim=1, width=32, depth=2)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=cfg.lr)
 
         # Collocation & BC points
