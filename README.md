@@ -16,8 +16,8 @@ $\Large{-\frac{d}{dx}\left(E(x)A(x)\frac{du}{dx}\right) = f(x), \quad x\in(0,L).
 Supported boundary conditions on $x=0$ and $x=L$:
 
 - 📌 **Dirichlet (displacement)**: $u=u_0$.
-- ⚡ **Neumann (traction / tip load)**: $EA\,u'(x)=P$.
-- 🔗 **Robin (spring / convective)**: $EA\,u'(x)+h\,u = g$.
+- ⚡ **Neumann (traction / tip load)**: $EAu'(x)=P$.
+- 🔗 **Robin (spring / convective)**: $EAu'(x)+hu = g$.
 
 > 💡 This project mainly showcases **tip load** and **body force** cases with homogeneous material; heterogeneity and Robin BCs are included in the code and easy to toggle.lastic Bar
 
