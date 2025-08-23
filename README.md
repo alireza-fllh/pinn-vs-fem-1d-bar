@@ -94,11 +94,11 @@ Supported boundary conditions on $x=0$ and $x=L$:
 ## 🏆 Selected results
 
 <p align="center">
-  <img src="data/outputs/hero_full.png" width="820" alt="Hero figure — tip load (in-range & extrapolation)">
+  <img src="banners/hero_full.png" width="820" alt="Hero figure — tip load (in-range & extrapolation)">
 </p>
 
 <p align="center">
-  <img src="data/outputs/anim_joint_extrap.gif" width="820" alt="Joint animation — predictions (top) + losses (bottom), tip load extrapolation P=1.20">
+  <img src="banners/anim_joint_extrap.gif" width="820" alt="Joint animation — predictions (top) + losses (bottom), tip load extrapolation P=1.20">
   <br/>
   <em></em>
 </p>
