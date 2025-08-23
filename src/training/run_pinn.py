@@ -108,7 +108,7 @@ def main():
     outdir = Path(args.out)
     outdir.mkdir(parents=True, exist_ok=True)
 
-    SNAP_EVERY = 200  # save a prediction every 200 epochs
+    SNAP_EVERY = 5  # save a prediction every 200 epochs
     losses = []
     snapshots = []     # list of arrays u(x) over time
     snap_epochs = []   # matching epoch numbers

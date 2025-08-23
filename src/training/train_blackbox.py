@@ -66,7 +66,7 @@ class BBConfig:
     width: int = 64
     depth: int = 4
     seed: int = 0
-    snap_every: int = 200
+    snap_every: int = 5
     p_eval: float = 0.6  # P used for visualization snapshots
 
 def train_bb(npz_path: str, cfg: BBConfig, out_model: str, out_log: str):
@@ -135,10 +135,10 @@ def main():
     ap.add_argument("--epochs", type=int, default=6000)
     ap.add_argument("--batch", type=int, default=256)
     ap.add_argument("--lr", type=float, default=1e-3)
-    ap.add_argument("--width", type=int, default=64)
-    ap.add_argument("--depth", type=int, default=4)
+    ap.add_argument("--width", type=int, default=32)
+    ap.add_argument("--depth", type=int, default=2)
     ap.add_argument("--p-eval", type=float, default=0.6)
-    ap.add_argument("--snap-every", type=int, default=200)
+    ap.add_argument("--snap-every", type=int, default=5)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--model-out", type=str, default="data/outputs/bb_model.pt")
     ap.add_argument("--log-out", type=str, default="data/outputs/bb_trainlog.npz")

@@ -7,6 +7,6 @@ neural network training, along with evaluation utilities.
 Author: Alireza Fallahnejad
 """
 # Black-box model helpers
-from .train_blackbox import BBNet, train_bb
+from .train_blackbox import BBConfig, BBNet, train_bb
 
-__all__ = ["BBNet", "train_bb"]
+__all__ = ["BBConfig", "BBNet", "train_bb"]
