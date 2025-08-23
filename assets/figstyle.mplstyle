@@ -1,0 +1,30 @@
+figure.figsize: 7, 4
+savefig.dpi: 240
+savefig.bbox: tight
+
+font.size: 12
+font.family: serif
+font.serif: cmr10
+mathtext.fontset: cm
+mathtext.default: regular
+
+axes.titlesize: 13
+axes.labelsize: 12
+
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: True
+grid.alpha: 0.25
+
+lines.linewidth: 2.2
+lines.markersize: 5
+
+legend.frameon: False
+legend.loc: best
+
+xtick.direction: out
+ytick.direction: out
+xtick.major.size: 4
+ytick.major.size: 4
+
+
