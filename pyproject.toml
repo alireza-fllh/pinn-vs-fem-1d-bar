@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "pinn-vs-fem-1d_elastic_bar"
+version = "1.0"
+description = "PINN vs FEM on a 1D elastic bar"
+requires-python = ">=3.10"
+dependencies = [
+"numpy",
+"scipy",
+"matplotlib",
+"torch",
+]
+
+
+[tool.black]
+line-length = 100
