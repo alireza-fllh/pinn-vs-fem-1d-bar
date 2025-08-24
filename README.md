@@ -20,7 +20,23 @@ Supported boundary conditions on $x=0$ and $x=L$:
 - 🔗 **Robin (spring / convective)**: $EAu'(x)+hu = g$.
 
 > 💡 This project mainly showcases **tip load** and **body force** cases with homogeneous material; heterogeneity and Robin BCs are included in the code and easy to toggle.lastic Bar
+---
 
+## 🏆 Selected results
+
+<p align="center">
+  <img src="banners/hero_full.png" width="619" alt="Hero figure — tip load (in-range & extrapolation)" hspace='15'>
+  <img src="banners/anim_joint_extrap.gif" width="450" alt="Joint animation — predictions (top) + losses (bottom), tip load extrapolation P=1.20">
+  <br/>
+  <em></em>
+</p>
+
+### 📊 Key Findings:
+
+- ✅ For **interpolation** (in-range), $\text{PINN}$ and $\text{BB}$ achieve low error; $\text{PINN}$ converges in fewer epochs.
+- 🚀 For **Extrapolation**, $\text{PINN}$ remains accurate; $\text{BB}$ deteriorates.
+- 🛡️ In the case of **noisy data**, $\text{PINN}$ has higher reliability.
+- 📈 On a **limited amount of training data** samples, $\text{PINN}$ functions much better than $\text{BB}$.
 ---
 
 
@@ -116,23 +132,3 @@ make hero
   - *Noise robustness*: error vs label noise $\sigma$
   - *Reliability*: $\mu \displaystyle \pm \sigma$ across seeds.
   - *Extrapolation*: evaluation at $P$ beyond dataset range
-
-## 🏆 Selected results
-
-<p align="center">
-  <img src="banners/hero_full.png" width="820" alt="Hero figure — tip load (in-range & extrapolation)">
-</p>
-
-<p align="center">
-  <img src="banners/anim_joint_extrap.gif" width="820" alt="Joint animation — predictions (top) + losses (bottom), tip load extrapolation P=1.20">
-  <br/>
-  <em></em>
-</p>
-
-### 📊 Key Findings:
-
-- ✅ For **interpolation** (in-range), $\text{PINN}$ and $\text{BB}$ achieve low error; $\text{PINN}$ converges in fewer epochs.
-- 🚀 For **Extrapolation**, $\text{PINN}$ remains accurate; $\text{BB}$ deteriorates.
-- 🛡️ In the case of **noisy data**, $\text{PINN}$ has higher reliability.
-- 📈 On a **limited amount of training data** samples, $\text{PINN}$ functions much better than $\text{BB}$.
-
