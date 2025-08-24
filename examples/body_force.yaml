@@ -1,0 +1,36 @@
+outdir: data/outputs/examples/body_force
+
+fem:
+  case: body_force
+  left_type: dirichlet
+  right_type: neumann
+  u0: 0.0
+  PL: 0.00   # free tip
+
+pinn:
+  epochs: 1500
+  w_bc: 100
+  lr: 1.0e-3
+  ncol: 200
+  snap: 20
+  seed: 0
+  normalize_x: true
+  normalize_u: true
+
+dataset:
+  n_configs: 40
+  M: 40
+  P_low: 0.2
+  P_high: 1.0
+  sigma: 0.02
+  seed: 0
+
+bb:
+  epochs: 1500
+  lr: 1.0e-3
+  width: 64
+  depth: 4
+  snap: 20
+
+hero:
+  enabled: true
