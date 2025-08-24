@@ -1,4 +1,4 @@
-# 🏗️ # PINN vs FEM for a 1D Elastic Bar
+# 🏗️ PINN vs FEM for a 1D Elastic Bar
 
 **Physics-Informed Neural Networks (PINNs) vs a purely data-driven black-box** on a classical solid-mechanics benchmark: the axial displacement of a prismatic bar. The repo provides:
 - 🔧 A minimal **FEM reference solver**,
@@ -28,9 +28,12 @@ Supported boundary conditions on $x=0$ and $x=L$:
 
     .
     ├── 🎨 assets/
-    ├── 📁 data/
-    │   ├── 📊 outputs/                # FEM CSVs, logs, figures
-    │   └── 🎯 supervised/             # generated BB datasets
+    ├── �️ banners/                     # hero figures and animations for README
+    ├── 📝 examples/                   # YAML configuration files for common scenarios
+    │   ├── body_force.yml              # uniform body force case
+    │   ├── hetero_robin.yml            # heterogeneous material with Robin BCs
+    │   ├── tip_load_inrange.yml        # tip load within training range
+    │   └── tip_load_extrapolate.yml    # tip load extrapolation case
     ├── 💻 src/
     │   ├── ⚙️ core/                   # reusable components
     │   │   ├── fem.py
@@ -56,27 +59,50 @@ Supported boundary conditions on $x=0$ and $x=L$:
 ---
 
 ## ⚡ Quickstart (60 seconds)
+### You can run the provided scenarios in **two ways**:
+
+### 🔹 1. YAML configs (recommended)
+Each example is defined in the [`examples/`](examples/) folder as a simple `YAML` file.
+This is the most flexible way to run or modify experiments.
 
 ```bash
-    # 0️⃣ Create env
-    conda env create -f env.yml
-    conda activate py310-torch
+# 0️⃣ Create environment
+conda env create -f env.yml
+conda activate py310-torch
 
-    # 1️⃣ In-range demo (tip load P=0.60) → FEM + PINN + BB + joint figure
-    make inrange CASE=tip_load P=0.60 EPOCHS=1200 BB_EPOCHS=1200
+# 1️⃣ In-range demo (tip load, P=0.60 → FEM + PINN + BB + joint figure)
+python -m src.experiments.run_from_config --cfg examples/tip_load_inrange.yaml
 
-    # 2️⃣ Extrapolation demo (outside BB training range)
-    make extrap               # alias for P=1.20; adjust in Makefile if desired
+# 2️⃣ Extrapolation demo (outside BB training range, P=1.20)
+python -m src.experiments.run_from_config --cfg examples/tip_load_extrap.yaml
+```
 
-    # 3️⃣ Generate the hero figure
-    make hero
+To create a new scenario, simply copy an existing YAML in [`examples/`](examples/) and modify boundary conditions, loads, or training settings.
+
+### 🔹 2. Makefile shortcuts
+
+For users who prefer `make`, a set of quick aliases is still available:
+
+```bash
+# 0️⃣ Create env
+conda env create -f env.yml
+conda activate py310-torch
+
+# 1️⃣ In-range demo (tip load P=0.60) → FEM + PINN + BB + joint figure
+make inrange CASE=tip_load P=0.60 EPOCHS=1200 BB_EPOCHS=1200
+
+# 2️⃣ Extrapolation demo (outside BB training range)
+make extrap               # alias for P=1.20; adjust in Makefile if desired
+
+# 3️⃣ Generate the hero figure
+make hero
   ```
 
 📁 Results appear under `data/outputs/<CASE>_P<P>/`. Example artifacts:
 - `fem_tip_load.csv` – reference solution $(x,u)$
-- `pinn_tip_load_trainlog.npz` – PINN losses & snapshots,
+- `pinn_tip_load_trainlog.npz` – $\text{PINN}$ losses & snapshots,
 - `bb_trainlog.npz` – black-box losses & snapshots,
-- `hero.png/.svg`
+- `hero.png` / `hero.svg` – composite figure ($\text{FEM}$ vs $\text{PINN}$ vs $\text{BB}$)
 
 ## What's implemented
 - **FEM reference** with linear 1D bar elements.
