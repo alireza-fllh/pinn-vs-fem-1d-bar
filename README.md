@@ -44,7 +44,7 @@ Supported boundary conditions on $x=0$ and $x=L$:
 
     .
     ├── 🎨 assets/
-    ├── �️ banners/                     # hero figures and animations for README
+    ├──  banners/                     # hero figures and animations for README
     ├── 📝 examples/                   # YAML configuration files for common scenarios
     │   ├── body_force.yml              # uniform body force case
     │   ├── hetero_robin.yml            # heterogeneous material with Robin BCs
