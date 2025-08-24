@@ -14,6 +14,9 @@ from collections import defaultdict
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+
+plt.style.use("assets/figstyle.mplstyle")
+
 import numpy as np
 
 
