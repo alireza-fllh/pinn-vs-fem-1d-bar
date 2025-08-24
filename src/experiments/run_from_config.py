@@ -1,4 +1,13 @@
-# src/experiments/run_from_config.py
+"""
+Configuration-driven experiment pipeline orchestrator.
+
+Executes complete PINN vs FEM comparison experiments from YAML configuration files,
+coordinating FEM solving, PINN training, dataset generation, black-box training,
+and visualization generation in a reproducible and automated workflow.
+
+Author: Alireza Fallahnejad
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -11,6 +20,16 @@ import yaml
 
 
 def run(cmd_list, dry=False):
+    """
+    Execute a command with optional dry-run mode.
+
+    Args:
+        cmd_list: List of command arguments to execute
+        dry: If True, only print the command without executing
+
+    Returns:
+        Return code from subprocess execution (0 for dry runs)
+    """
     cmd_str = " ".join(shlex.quote(str(x)) for x in cmd_list)
     print(f"[run] {cmd_str}")
     if dry:
@@ -18,10 +37,36 @@ def run(cmd_list, dry=False):
     return subprocess.run(cmd_list, check=True).returncode
 
 def add_if(d: dict, key: str, flag: str, target: list):
+    """
+    Conditionally add command-line flag and value to target list.
+
+    Args:
+        d: Dictionary to check for key presence
+        key: Key to look for in dictionary
+        flag: Command-line flag to add (e.g., "--alpha0")
+        target: Target list to append flag and value to
+    """
     if key in d and d[key] is not None:
         target += [flag, str(d[key])]
 
 def build_dataset_path(ds_cfg: dict) -> str:
+    """
+    Generate dataset file path based on configuration parameters.
+
+    Constructs standardized dataset filename following the naming convention
+    used by data_gen.py for consistent file organization.
+
+    Args:
+        ds_cfg: Dataset configuration dictionary with keys:
+            P_low, P_high: Load parameter range
+            n_configs: Number of parameter configurations
+            M: Number of spatial points per configuration
+            sigma: Noise level
+            seed: Random seed (optional, defaults to 0)
+
+    Returns:
+        Standardized dataset file path string
+    """
     # Matches the naming scheme used by your data_gen.py
     P_low, P_high = ds_cfg["P_low"], ds_cfg["P_high"]
     n_cfg, M = ds_cfg["n_configs"], ds_cfg["M"]
@@ -30,6 +75,26 @@ def build_dataset_path(ds_cfg: dict) -> str:
     return f"data/supervised/dataset_P_{P_low:.2f}_{P_high:.2f}_N{n_cfg}_M{M}_sigma{sigma:.3f}_seed{seed}.npz"
 
 def main():
+    """
+    Main orchestration function for configuration-driven experiments.
+
+    Parses YAML configuration files and coordinates execution of:
+    1. FEM reference solution computation
+    2. PINN training with physics-informed loss
+    3. Supervised dataset generation for black-box training
+    4. Black-box neural network training and evaluation
+    5. Hero figure generation with comparative visualization
+
+    Supports flexible stage selection, dry-run mode, and comprehensive
+    boundary condition specifications including Dirichlet, Neumann, and Robin types.
+
+    Configuration Structure:
+        fem: FEM solver configuration (case, boundary conditions)
+        pinn: PINN training configuration (epochs, loss weights, normalization)
+        dataset: Supervised dataset generation parameters
+        bb: Black-box network training configuration
+        hero: Visualization generation settings
+    """
     ap = argparse.ArgumentParser(description="Run an example pipeline from a YAML config.")
     ap.add_argument("--cfg", required=True, help="YAML file in examples/")
     ap.add_argument("--dry-run", action="store_true", help="Print commands without executing.")
