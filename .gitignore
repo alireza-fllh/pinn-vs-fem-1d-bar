@@ -1,4 +1,3 @@
 data/
-Makefile
 pyproject.toml
 __pycache__/
