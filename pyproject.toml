@@ -19,6 +19,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest"]
 
+[tool.setuptools.packages.find]
+include = ["src*"]  # ship src as one package, not src-layout
+
 
 [tool.black]
 line-length = 100
