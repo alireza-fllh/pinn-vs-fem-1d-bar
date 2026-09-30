@@ -1,2 +1,7 @@
 data/
 __pycache__/
+
+# local-only visualization scripts
+src/visualization/animate_losses.py
+src/visualization/animate_predictions.py
+src/visualization/plot.py
