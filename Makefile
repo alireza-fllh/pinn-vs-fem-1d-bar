@@ -9,7 +9,7 @@ help:
 	@echo "Targets:"
 	@echo "  make example CFG=examples/<file>.yaml   # run any YAML example"
 	@echo "  make inrange                            # tip load, P=0.60 (uses examples/tip_load_inrange.yaml)"
-	@echo "  make extrap                             # tip load, P=1.20 (uses examples/tip_load_extrap.yaml)"
+	@echo "  make extrap                             # tip load, P=1.20 (uses examples/tip_load_extrapolate.yaml)"
 	@echo "  make hero OUT=<run_dir> CASE=<case>     # build 2x2 hero figure for a run dir"
 	@echo "  make sweep                              # run metrics sweep (writes data/outputs/metrics.csv)"
 	@echo "  make setup | format | test | clean      # dev utilities"
@@ -26,7 +26,7 @@ inrange:
 	$(MAKE) example CFG=examples/tip_load_inrange.yaml
 
 extrap:
-	$(MAKE) example CFG=examples/tip_load_extrap.yaml
+	$(MAKE) example CFG=examples/tip_load_extrapolate.yaml
 
 # --------- Build hero figure for an existing run dir ----------
 # Usage:

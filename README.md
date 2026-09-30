@@ -46,10 +46,10 @@ Supported boundary conditions on $x=0$ and $x=L$:
     ├── 🎨 assets/
     ├──  banners/                     # hero figures and animations for README
     ├── 📝 examples/                   # YAML configuration files for common scenarios
-    │   ├── body_force.yml              # uniform body force case
-    │   ├── hetero_robin.yml            # heterogeneous material with Robin BCs
-    │   ├── tip_load_inrange.yml        # tip load within training range
-    │   └── tip_load_extrapolate.yml    # tip load extrapolation case
+    │   ├── body_force.yaml             # uniform body force case
+    │   ├── hetero_robin.yaml           # heterogeneous material with Robin BCs
+    │   ├── tip_load_inrange.yaml       # tip load within training range
+    │   └── tip_load_extrapolate.yaml   # tip load extrapolation case
     ├── 💻 src/
     │   ├── ⚙️ core/                   # reusable components
     │   │   ├── fem.py
@@ -90,7 +90,7 @@ conda activate py310-torch
 python -m src.experiments.run_from_config --cfg examples/tip_load_inrange.yaml
 
 # 2️⃣ Extrapolation demo (outside BB training range, P=1.20)
-python -m src.experiments.run_from_config --cfg examples/tip_load_extrap.yaml
+python -m src.experiments.run_from_config --cfg examples/tip_load_extrapolate.yaml
 ```
 
 To create a new scenario, simply copy an existing YAML in [`examples/`](examples/) and modify boundary conditions, loads, or training settings.
