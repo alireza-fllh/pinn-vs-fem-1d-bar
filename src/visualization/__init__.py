@@ -7,12 +7,9 @@ neural networks and finite element methods.
 
 Author: Alireza Fallahnejad
 
-Key Exports:
-    animate_losses: Training loss evolution animations
-    animate_preds: Prediction evolution animations
+Modules (run as scripts, e.g. python -m src.visualization.hero_figure):
+    hero_figure: composite FEM / PINN / black-box figure
+    plot_metrics: data-efficiency and noise-robustness plots
 """
 
-from .animate_losses import animate_losses
-from .animate_predictions import animate_preds
-
-__all__ = ["animate_losses", "animate_preds"]
+__all__ = []
