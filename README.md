@@ -8,7 +8,7 @@
 
 ## 📐 Problem statement
 
-Consider a straight 1D bar of length $\text(L)$ with axial displacement $u(x)$. Let $E(x)$ be Young's modulus, $A(x)$ cross‑sectional area, and $f(x)$ the axial body force per unit length. The governing equation in strong form is:
+Consider a straight 1D bar of length $L$ with axial displacement $u(x)$. Let $E(x)$ be Young's modulus, $A(x)$ cross‑sectional area, and $f(x)$ the axial body force per unit length. The governing equation in strong form is:
 
 
 $\Large{-\frac{d}{dx}\left(E(x)A(x)\frac{du}{dx}\right) = f(x), \quad x\in(0,L).}$
@@ -19,7 +19,8 @@ Supported boundary conditions on $x=0$ and $x=L$:
 - ⚡ **Neumann (traction / tip load)**: $EAu'(x)=P$.
 - 🔗 **Robin (spring / convective)**: $EAu'(x)+hu = g$.
 
-> 💡 This project mainly showcases **tip load** and **body force** cases with homogeneous material; heterogeneity and Robin BCs are included in the code and easy to toggle.lastic Bar
+> 💡 This project mainly showcases **tip load** and **body force** cases with homogeneous material; heterogeneity and Robin BCs are included in the code and easy to toggle.
+
 ---
 
 ## 🏆 Selected results
@@ -126,7 +127,7 @@ make hero
   - fully connected MLP
   - PDE residual + weighted BC losses
   - optional input/output normalization.
-- **Black-box MLP**: supervised $[x, P] \rightarrow u$, integrated no pysics.
+- **Black-box MLP**: supervised $[x, P] \rightarrow u$, no physics in the loss.
 - **Experiments**:
   - *Data efficiency*: error vs number of samples per configuration $(M)$
   - *Noise robustness*: error vs label noise $\sigma$
