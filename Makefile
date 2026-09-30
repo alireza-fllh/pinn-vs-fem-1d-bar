@@ -53,8 +53,7 @@ format:
 	black src tests
 
 test:
-	$(PY) tests/test_physics.py
-	$(PY) tests/test_shapes.py
+	$(PY) -m pytest -q
 
 clean:
 	rm -rf data/outputs/*/*.png data/outputs/*/*.svg
