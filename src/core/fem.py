@@ -71,42 +71,33 @@ def solve_1d_bar(cfg: FEMConfig, bc_left: BCSpec, bc_right: BCSpec):
         F[dofs] += fA_m * h * 0.5
 
     # ---- apply BCs ----
+    # Integrating by parts leaves the boundary term s * EA u'(x_b) v(x_b), with
+    # s = +1 at x = L and s = -1 at x = 0 (the outward normal points in -x there).
     def apply_dirichlet(node: int, value: float):
+        F[:] -= K[:, node] * value  # move the known column to the RHS
         K[node, :] = 0.0
         K[:, node] = 0.0
         K[node, node] = 1.0
         F[node] = value
 
-    def apply_neumann(node: int, P: float):
-        F[node] += P
+    dirichlet = []
+    for node, s, bc in ((0, -1.0, bc_left), (N, 1.0, bc_right)):
+        if bc.kind == "dirichlet":
+            dirichlet.append((node, bc.u))
+        elif bc.kind == "neumann":
+            # EA u' = P
+            F[node] += s * bc.P
+        elif bc.kind == "robin":
+            # alpha u + beta EA u' = g  ->  EA u' = (g - alpha u) / beta
+            if bc.beta == 0.0:
+                dirichlet.append((node, bc.g / bc.alpha))
+            else:
+                K[node, node] += s * bc.alpha / bc.beta
+                F[node] += s * bc.g / bc.beta
 
-    def EA_at(node_x: float) -> float:
-        return float(E_fn(np.array([node_x]))[0] * A_fn(np.array([node_x]))[0])
-
-    # left
-    if bc_left.kind == "dirichlet":
-        apply_dirichlet(0, bc_left.u)
-    elif bc_left.kind == "neumann":
-        apply_neumann(0, bc_left.P)
-    elif bc_left.kind == "robin":
-        EA0 = EA_at(0.0)
-        K[0, 0] += bc_left.alpha            # alpha * u(0)
-        F[0] += bc_left.g                   # RHS g
-        # beta * EA * u'(0) is naturally handled by stiffness; beta used here as scaling if needed
-        if bc_left.beta != 1.0:
-            K *= bc_left.beta  # very unusual; better: warn or incorporate in formulation
-
-    # right
-    if bc_right.kind == "dirichlet":
-        apply_dirichlet(N, bc_right.u)
-    elif bc_right.kind == "neumann":
-        apply_neumann(N, bc_right.P)
-    elif bc_right.kind == "robin":
-        EAL = EA_at(L)
-        K[N, N] += bc_right.alpha
-        F[N] += bc_right.g
-        if bc_right.beta != 1.0:
-            K *= bc_right.beta
+    # essential BCs last, so the RHS lift sees the final stiffness
+    for node, value in dirichlet:
+        apply_dirichlet(node, value)
 
     # solve
     u = np.linalg.solve(K, F)
